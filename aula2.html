@@ -1,0 +1,124 @@
+/*
+Michel Silva Maldonado
+*/
+
+<html ng-app="Painel de Controle">
+<head>
+<script src="lib/angular.js"></script>
+
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- Plotly -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+	<style>
+	.table{margin-top: 20px;}
+	.selecionado{background-color: yellow;}
+	
+    </style>
+
+	<script >
+		angular.module("Lista", []);
+		angular.module("Lista").controller("ListaCtrl", function($scope){
+				$scope.app="Painel de Controle";
+				$scope.cidades=[
+				{data: new Date(), cidade: "Leopoldina", temperatura: "32", umidade:"95"},
+				{data: new Date(), cidade: "Juiz de Fora", temperatura: "32", umidade:"90"},
+				{data: new Date(), cidade: "Cataguases", temperatura: "32", umidade:"95"}
+				];
+				$scope.regiao=[{nome: "Minas Gerais", codigo: "MG"},
+								{nome: "Sao Paulo", codigo: "SP"},
+				];
+				$scope.adicionarCidade= function(inf){
+					inf.data = new Date();
+					$scope.cidades.push(angular.copy(inf));
+					delete $scope.inf;
+				};
+				//retorna so as cidades selecionadasss
+				$scope.apagarInfor = function(cidades){
+					$scope.cidades = cidades.filter(function(inf)
+					{
+
+							if(!inf.selecionado) 
+								return inf;
+					});
+					console.log(cidadesSelecionadas);
+				};
+				//determina a ordem : verdadeiro ou falso
+				$scope.ordenarPor = function(campo){
+					$scope.criterioDeOrde=campo;
+					$scope.direcaoDaOrd = !$scope.direcaoDaOrd;
+				};
+
+		});
+
+	</script>
+</head>
+
+<body ng-controller="ListaCtrl">
+	
+	
+		<div class="container">
+			<div class="row">
+			<div class="col-sm-4">
+		      	<h3 align = "center">{{app}}</h3>
+		      	<input class="form-control" type="text" ng-model="busca" placeholder="O que vc esta buscando?"/>
+
+		<table class="table table-striped">
+			<tr>
+				<th></th>
+				<th><a href="" ng-click="ordenarPor('data')">Data</a></th>
+				<th>Cidade</th>
+				<th><a href="" ng-click="ordenarPor('temperatura')">Temperatura</a></th>
+				<th>Humidade</th>
+				<th>UF</th>
+			</tr>
+			<!-- busca as informações em scope.cidades -->
+
+			<!-- também pode filtrar os dados por ordem e limita apenas 10 cidades(apenas oculta)-->
+			<tr ng-class="{'selecionado': inf.selecionado}" ng-repeat="inf in cidades | filter:busca | orderBy:criterioDeOrde:direcaoDaOrd | limitTo:10">
+				<th><input type="checkbox" ng-model="inf.selecionado"/></th>
+				<td>{{inf.data | date:'dd/MM/yyyy HH:mm'}}</td>
+				<td>{{inf.cidade}}</td>
+				<td>{{inf.temperatura +'°'}}</td>
+				<td>{{inf.umidade +'%'}}</td>
+				<td>{{inf.reg.codigo}}</td>
+			</tr>
+
+		</table>
+		<hr/>
+		<!-- inf.cidade serve p/ simplificar o scope.adicionarCidade, caso contrario o nomes ficariam grandes) -->
+		<input class ="form-control" type="text" ng-model="inf.cidade" placeholder="Cidade" />
+		<input class ="form-control" type="text" ng-model="inf.temperatura" placeholder="Temperatura" />
+		<input class ="form-control" type="text" ng-model="inf.umidade" placeholder="Umidade" />
+				<select class="form-control" ng-model="inf.reg" ng-options="reg.nome for reg in regiao">
+			<option value="">Selecione o Estado</option>
+		</select>
+		<!-- ng-disable colocar o botao inoperante -->
+		<button class="btn btn-primary btn-block" ng-click="adicionarCidade(inf)" ng-disabled="!inf.cidade || !inf.temperatura || !inf.umidade"> Enviar</button>
+		<button class="btn btn-danger btn-block" ng-click="apagarInfor(cidades)"> Apagar Informacao</button>
+
+		</div>
+			<div class="col-sm-8">
+			</div>
+	</div>
+	</div>
+	
+</body>
+</html>
